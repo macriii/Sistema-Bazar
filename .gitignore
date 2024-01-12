@@ -1,52 +1,527 @@
-# Prerequisites
-*.d
+#include <string.h>
+#include <stdio.h>
+#include <ctype.h>
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+#define MAXCLIENTES 1000
+#define MAXPECAS 5000
 
-# Linker output
-*.ilk
-*.map
-*.exp
+struct data
+{
+    short int dia, mes, ano;
+};
 
-# Precompiled Headers
-*.gch
-*.pch
+struct peca
+{
+    int codigo;
+    char nome[30];
+    char descricao[60];
+    char tipo[45];
+    double valor;
+};
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
+struct cliente
+{
+    char cpf[12];
+    char nome[50];
+    char telefone[11];
+    char pix[15];
+    char email[30];
+    struct data dataNasc;
+};
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+void exibeMenuDeOpcoesGeral()
+{
+    system("clear");
+    printf("\nMenu Sistema do Garimpo do Bau");
+    printf("\nC - Menu de Cliente");
+    printf("\nF - Menu de Pecas");
+    printf("\nZ - Sair do Programa");
+}
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+void exibeMenuDeOpcoesCliente()
+{
+    system("clear");
+    printf("\n Cadastramento de Clientes");
+    printf("\n I - Incluir Novo Cliente");
+    printf("\n P - Imprimir Clientes");
+    printf("\n R - Remover Cliente");
+    printf("\n A - Alterar Cliente");
+    printf("\n C - Consultar Cliente");
+    printf("\n X - Sair do Programa");
+}
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+struct cliente digitaCliente()
+{
+    struct cliente novoCliente;
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+    do
+    {
+        printf("\nDigite o CPF do cliente: ");
+        scanf("%s", novoCliente.cpf);
+        getchar();
+
+        printf("\nDigite o nome do cliente: ");
+        scanf("%s", novoCliente.nome);
+        getchar();
+
+        printf("\nDigite o Telefone do cliente: ");
+        scanf("%s", novoCliente.telefone);
+        getchar();
+
+        printf("\nDigite o Email do cliente: ");
+        scanf("%s", novoCliente.email);
+        getchar();
+
+        printf("\nDigite o Pix do cliente: ");
+        scanf("%s", novoCliente.pix);
+        getchar();
+
+        printf("\nDigite o dia: ");
+        scanf("%hi", &novoCliente.dataNasc.dia);
+        getchar();
+
+        printf("\nDigite o mes: ");
+        scanf("%hi", &novoCliente.dataNasc.mes);
+        getchar();
+
+        printf("\nDigite o ano: ");
+        scanf("%hi", &novoCliente.dataNasc.ano);
+        getchar();
+    } while (strlen(novoCliente.cpf) > 11);
+
+    return novoCliente;
+}
+
+void alterarCliente(struct cliente clientes[MAXCLIENTES], int quantosClientes)
+{
+    char cpfBusca[12];
+    int encontrado = 0;
+
+    printf("\nDigite o CPF do cliente a ser alterado: ");
+    scanf("%s", cpfBusca);
+    getchar();
+
+    for (int i = 0; i < quantosClientes; i++)
+    {
+        if (strcmp(clientes[i].cpf, cpfBusca) == 0)
+        {
+            printf("\nCliente encontrado. Digite os novos dados:");
+
+            // Solicitar novos dados
+            printf("\nDigite o novo nome do cliente: ");
+            scanf("%s", clientes[i].nome);
+            getchar();
+
+            printf("\nDigite o novo telefone do cliente: ");
+            scanf("%s", clientes[i].telefone);
+            getchar();
+
+            printf("\nDigite o novo email do cliente: ");
+            scanf("%s", clientes[i].email);
+            getchar();
+
+            printf("\nDigite o novo Pix do cliente: ");
+            scanf("%s", clientes[i].pix);
+            getchar();
+
+            printf("\nDigite o novo dia de nascimento: ");
+            scanf("%hi", &clientes[i].dataNasc.dia);
+            getchar();
+
+            printf("\nDigite o novo mes de nascimento: ");
+            scanf("%hi", &clientes[i].dataNasc.mes);
+            getchar();
+
+            printf("\nDigite o novo ano de nascimento: ");
+            scanf("%hi", &clientes[i].dataNasc.ano);
+            getchar();
+
+            printf("\nCliente alterado com sucesso.");
+            encontrado = 1;
+            break;
+        }
+    }
+
+    if (!encontrado)
+    {
+        printf("\nCliente nao encontrado.");
+    }
+}
+
+void consultarCliente(struct cliente clientes[MAXCLIENTES], int quantosClientes)
+{
+    char cpfBusca[12];
+    int encontrado = 0;
+
+    printf("\nDigite o CPF do cliente a ser consultado: ");
+    scanf("%s", cpfBusca);
+    getchar();
+
+    for (int i = 0; i < quantosClientes; i++)
+    {
+        if (strcmp(clientes[i].cpf, cpfBusca) == 0)
+        {
+            printf("\nCliente encontrado:");
+
+            printf("\nCPF: %s", clientes[i].cpf);
+            printf("\nNome: %s", clientes[i].nome);
+            printf("\nTelefone: %s", clientes[i].telefone);
+            printf("\nEmail: %s", clientes[i].email);
+            printf("\nPix: %s", clientes[i].pix);
+            printf("\nData de Nascimento: ");
+            printf("%hi/%hi/%hi", clientes[i].dataNasc.dia, clientes[i].dataNasc.mes, clientes[i].dataNasc.ano);
+            getchar();
+
+            encontrado = 1;
+            break;
+        }
+    }
+
+    if (!encontrado)
+    {
+        printf("\nCliente nao encontrado.");
+    }
+}
+
+void inserirNovoCliente(struct cliente clientes[MAXCLIENTES], int *quantosClientes)
+{
+    if (*quantosClientes == MAXCLIENTES)
+    {
+        printf("\nERRO. Nao tem mais espaco para novos clientes");
+    }
+    else
+    {
+        struct cliente novoCliente;
+        novoCliente = digitaCliente();
+        clientes[*quantosClientes] = novoCliente;
+        (*quantosClientes)++;
+    }
+}
+
+void mostrarData(struct data d)
+{
+    printf("%hi/%hi/%hi", d.dia, d.mes, d.ano);
+}
+
+void ImprimirCliente(struct cliente clientes[MAXCLIENTES], int quantosClientes)
+{
+    for (int i = 0; i < quantosClientes; i++)
+    {
+        printf("\nCliente %d:", i + 1);
+        printf("\nCPF: %s", clientes[i].cpf);
+        printf("\nNome: %s", clientes[i].nome);
+        printf("\nTelefone: %s", clientes[i].telefone);
+        printf("\nEmail: %s", clientes[i].email);
+        printf("\nPix: %s", clientes[i].pix);
+        printf("\nData de Nascimento: ");
+        mostrarData(clientes[i].dataNasc);
+        getchar();
+    }
+}
+
+void removerCliente(struct cliente clientes[MAXCLIENTES], int *quantosClientes, int indice)
+{
+    if (indice >= 0 && indice < *quantosClientes)
+    {
+        for (int i = indice; i < *quantosClientes - 1; i++)
+        {
+            clientes[i] = clientes[i + 1];
+        }
+        (*quantosClientes)--;
+    }
+    else
+    {
+        printf("\nERRO: Indice invalido para remocao\n");
+    }
+}
+
+void exibeMenuDeOpcoesPecas()
+{
+    system("clear");
+    printf("\n Cadastramento de Pecas");
+    printf("\n I - Incluir Nova Peca");
+    printf("\n P - Imprimir Pecas");
+    printf("\n R - Remover Peca");
+    printf("\n A - Alterar Peca");
+    printf("\n C - Consultar Pecas");
+    printf("\n Y - Sair do Programa");
+}
+
+char digitaOpcao()
+{
+    char opcao;
+
+    printf("\nDigite sua opcao: ");
+    scanf("%c", &opcao);
+    opcao = toupper(opcao);
+    getchar();
+    return opcao;
+}
+
+struct peca digitaPeca()
+{
+    struct peca novaPeca;
+
+    do
+    {
+        printf("\nDigite o Codigo da Peca: ");
+        scanf("%d", &novaPeca.codigo);
+        getchar();
+
+        printf("\nDigite o nome da Peca: ");
+        scanf("%s", novaPeca.nome);
+        getchar();
+
+        printf("\nDigite a descricao da Peca: ");
+        scanf("%s", novaPeca.descricao);
+        getchar();
+
+        printf("\nDigite o Tipo da peca: ");
+        scanf("%s", novaPeca.tipo);
+        getchar();
+
+        printf("\nDigite o Valor: ");
+        scanf("%lf", &novaPeca.valor);  // Altere para 'double' para corrigir o erro
+        getchar();
+
+    } while (novaPeca.codigo > 5); // tamanho da string
+
+    return novaPeca;
+}
+
+void inserirNovaPeca(struct peca pecas[MAXPECAS], int *quantasPecas)
+{
+    if (*quantasPecas == MAXPECAS)
+    {
+        printf("\nERRO. Nao tem mais espaco para novas Pecas");
+    }
+    else
+    {
+        struct peca novaPeca;
+        novaPeca = digitaPeca();
+        pecas[*quantasPecas] = novaPeca;
+        (*quantasPecas)++;
+    }
+}
+
+void ImprimirPeca(struct peca pecas[MAXPECAS], int quantasPecas)
+{
+    for (int i = 0; i < quantasPecas; i++)
+    {
+        printf("\nPeca %d:", i + 1);
+        printf("\nCodigo: %d", pecas[i].codigo);
+        printf("\nNome: %s", pecas[i].nome);
+        printf("\nDescricao: %s", pecas[i].descricao);
+        printf("\nTipo: %s", pecas[i].tipo);
+        printf("\nValor: %lf", pecas[i].valor);
+        getchar();
+    }
+}
+    
+    void alterarPeca(struct peca pecas[MAXPECAS], int quantasPecas)
+{
+    int codigoBusca;
+    int encontrado = 0;
+
+    printf("\nDigite o Codigo da Peca a ser alterada: ");
+    scanf("%d", &codigoBusca);
+    getchar();
+
+    for (int i = 0; i < quantasPecas; i++)
+    {
+        if (pecas[i].codigo == codigoBusca)
+        {
+            printf("\nPeca encontrada. Digite os novos dados:");
+
+            // Solicitar novos dados
+            printf("\nDigite o novo nome da Peca: ");
+            scanf("%s", pecas[i].nome);
+            getchar();
+
+            printf("\nDigite a nova descricao da Peca: ");
+            scanf("%s", pecas[i].descricao);
+            getchar();
+
+            printf("\nDigite o novo tipo da Peca: ");
+            scanf("%s", pecas[i].tipo);
+            getchar();
+
+            printf("\nDigite o novo valor da Peca: ");
+            scanf("%lf", &pecas[i].valor);
+            getchar();
+
+            printf("\nPeca alterada com sucesso.");
+            encontrado = 1;
+            break;
+        }
+    }
+
+    if (!encontrado)
+    {
+        printf("\nPeca nao encontrada.");
+    }
+}
+void consultarPeca(struct peca pecas[MAXPECAS], int quantasPecas)
+{
+    int codigoBusca;
+    int encontrado = 0;
+
+    printf("\nDigite o Codigo da Peca a ser consultada: ");
+    scanf("%d", &codigoBusca);
+    getchar();
+
+    for (int i = 0; i < quantasPecas; i++)
+    {
+        if (pecas[i].codigo == codigoBusca)
+        {
+            printf("\nPeca encontrada:");
+
+            printf("\nCodigo: %d", pecas[i].codigo);
+            printf("\nNome: %s", pecas[i].nome);
+            printf("\nDescricao: %s", pecas[i].descricao);
+            printf("\nTipo: %s", pecas[i].tipo);
+            printf("\nValor: %lf", pecas[i].valor);
+            getchar();
+
+            encontrado = 1;
+            break;
+        }
+    }
+
+    if (!encontrado)
+    {
+        printf("\nPeca nao encontrada.");
+    }
+}
+
+void removerPeca(struct peca pecas[MAXPECAS], int *quantasPecas, int indice)
+{
+    if (indice >= 0 && indice < *quantasPecas)
+    {
+        for (int i = indice; i < *quantasPecas - 1; i++)
+        {
+            pecas[i] = pecas[i + 1];
+        }
+        (*quantasPecas)--;
+    }
+    else
+    {
+        printf("\nERRO: Indice invalido para remocao\n");
+    }
+}
+
+
+int main()
+{
+    struct cliente clientes[MAXCLIENTES];
+    int quantosClientes = 0;
+
+    struct peca pecas[MAXPECAS];
+    int quantasPecas = 0;
+
+    char opcao;
+    do
+    {
+        exibeMenuDeOpcoesGeral();
+
+        opcao = digitaOpcao();
+
+        switch (opcao)
+        {
+        case 'C': // Menu Cliente
+        {
+            do
+            {
+                exibeMenuDeOpcoesCliente();
+
+                opcao = digitaOpcao();
+
+                switch (opcao)
+                {
+                case 'I': // Incluir novo cliente
+                {
+                    inserirNovoCliente(clientes, &quantosClientes);
+                    break;
+                }
+                case 'P':
+                {
+                    ImprimirCliente(clientes, quantosClientes);
+                    break;
+                }
+                case 'R':
+                {
+                    int indice;
+
+                    printf("\nDigite o indice do cliente a ser removido: ");
+                    scanf("%d", &indice);
+                    getchar();
+
+                    removerCliente(clientes, &quantosClientes, indice - 1);
+                    break;
+                }
+                case 'A': // Alterar Cliente
+                {
+                    alterarCliente(clientes, quantosClientes);
+                    break;
+                }
+                case 'C': // Consultar Cliente
+                {
+                    consultarCliente(clientes, quantosClientes);
+                    break;
+                }
+                }
+            } while (opcao != 'X');
+            break;
+        }
+case 'F':
+{
+    do
+    {
+        exibeMenuDeOpcoesPecas();
+        opcao = digitaOpcao();
+
+        switch (opcao)
+        {
+
+        case 'I':
+        {
+            inserirNovaPeca(pecas, &quantasPecas);
+            break;
+        }
+        case 'P':
+        {
+            ImprimirPeca(pecas, quantasPecas);
+            break;
+        }
+        case 'R':
+        {
+            int indice;
+
+            printf("\nDigite o indice da Peca a ser removida: ");
+            scanf("%d", &indice);
+            getchar();
+
+            removerPeca(pecas, &quantasPecas, indice - 1);
+            break;
+        }
+        case 'A': // Alterar Peca
+        {
+            alterarPeca(pecas, quantasPecas);
+            break;
+        }
+        case 'C': // Consultar Peca
+        {
+            consultarPeca(pecas, quantasPecas);
+            break;
+        }
+        }
+    } while (opcao != 'Y');
+    break;
+}
+
+        }
+    } while (opcao != 'Z');
+
+    return 0;
+}
+
